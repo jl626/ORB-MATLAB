@@ -29,10 +29,10 @@ for i = 1:maxiter % dynamic iteration
     
     % check geometric constraint of the selected points
     T = GeometricTest(pts1,pts2);
-    if (T == 0); continue; end; % random points does not satisfy geometric constraints
+    if (T == 0); continue; end % random points does not satisfy geometric constraints
     
     % direct linear transform for estimating homography matrix
-    Htmp = Homography(pts1,pts2,isnormal);
+    Htmp = homography(pts1,pts2,0);
 
     % calculate reprojection error
     [~,loc] = compute_reproj_error(feature1,feature2,Htmp,thres);
@@ -42,8 +42,8 @@ for i = 1:maxiter % dynamic iteration
         cinlr = length(loc); % update the number of inliers
         H = Htmp; % update homography matrix
         inlr_loc = loc;
-        maxiter = min(ransacIter(pval,), 1000) % update iteration number (maximum 1000)
+        maxiter = ransacIter(pval,cinlr,maxiter); % update iteration number (maximum 1000)
     end
 end
-
+H = H;
 % optional Levenberg-Marquardt optimisation 

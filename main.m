@@ -1,12 +1,15 @@
 % Read images
 im1 = imread('IMG_7895.JPG');
-im1 = imresize(im1,0.75);
-im1_grey = rgb2gray(im1);
 im2 = imread('IMG_7894.JPG');
-im2 = imresize(im2,0.75);
-im2_grey = rgb2gray(im2);
+
+scale = [1, 0.75, 0.5, 0.25];
 
 tic;
+im1 = imresize(im1,0.5);
+im1_grey = rgb2gray(im1);
+im2 = imresize(im2,0.5);
+im2_grey = rgb2gray(im2);
+
 % extract FAST corners and its score
 [corner1, fscore1] = fast9(im1_grey,20, 1);
 [corner2, fscore2] = fast9(im2_grey,20, 1);
@@ -46,8 +49,12 @@ toc;
 
 % RANdom SAmple Consensus (RANSAC) c.f. it is a necessary step to remove
 % outliers!
+[H,inlr] = computeHomography(feature1,feature2,3,1000);
 
-
+% since MATLAB transposed x and y;
+Hp = H';
+tform = projective2d(Hp);
+I = imwarp(im1,tform);
 
 %figure(1);
 %imshow(im1)
@@ -65,3 +72,5 @@ for i = 1:size(matches,1)
     plot([matches(i,3) matches(i,1)+size(im2,2)],[matches(i,4) matches(i,2)],'b')
 end
 title('the matched feature between the two images')
+figure(4); % warped image
+imshow(I);
