@@ -1,3 +1,11 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%       Simple example for ORB based image registration (with homography
+%       transform)
+%
+%                       Juheon Lee (21/06/2018)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % Read images
 im1 = imread('IMG_7895.JPG');
 im2 = imread('IMG_7894.JPG');
@@ -5,9 +13,9 @@ im2 = imread('IMG_7894.JPG');
 scale = [1, 0.75, 0.5, 0.25];
 
 tic;
-im1 = imresize(im1,0.5);
+%im1 = imresize(im1,1);
 im1_grey = rgb2gray(im1);
-im2 = imresize(im2,0.5);
+%im2 = imresize(im2,1);
 im2_grey = rgb2gray(im2);
 
 % extract FAST corners and its score
@@ -54,7 +62,8 @@ toc;
 % since MATLAB transposed x and y;
 Hp = H';
 tform = projective2d(Hp);
-I = imwarp(im1,tform);
+I = imwarp(im1,tform,'OutputView', imref2d(size(im2)));
+I = uint8((double(I) + double(im2))./2);
 
 %figure(1);
 %imshow(im1)
